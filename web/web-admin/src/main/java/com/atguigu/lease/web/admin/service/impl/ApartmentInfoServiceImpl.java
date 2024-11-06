@@ -45,6 +45,7 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
     private FacilityInfoMapper facilityInfoMapper;
     @Autowired
     private RoomInfoMapper roomInfoMapper;
+
     @Autowired
     private ApartmentLabelService apartmentLabelService;
     @Autowired
