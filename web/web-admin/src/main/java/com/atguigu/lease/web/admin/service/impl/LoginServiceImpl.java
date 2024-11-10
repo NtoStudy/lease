@@ -3,6 +3,7 @@ package com.atguigu.lease.web.admin.service.impl;
 import com.atguigu.lease.common.constant.RedisConstant;
 import com.atguigu.lease.common.exception.LeaseException;
 import com.atguigu.lease.common.result.ResultCodeEnum;
+import com.atguigu.lease.common.utils.JwtUtil;
 import com.atguigu.lease.model.entity.SystemUser;
 import com.atguigu.lease.model.entity.UserInfo;
 import com.atguigu.lease.model.enums.BaseStatus;
@@ -10,6 +11,7 @@ import com.atguigu.lease.web.admin.mapper.SystemUserMapper;
 import com.atguigu.lease.web.admin.service.LoginService;
 import com.atguigu.lease.web.admin.vo.login.CaptchaVo;
 import com.atguigu.lease.web.admin.vo.login.LoginVo;
+import com.atguigu.lease.web.admin.vo.system.user.SystemUserInfoVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.wf.captcha.SpecCaptcha;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -58,9 +60,7 @@ public class LoginServiceImpl implements LoginService {
         }
 
         //3.校验用户是否存在
-        LambdaQueryWrapper<SystemUser> systemUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        systemUserLambdaQueryWrapper.eq(SystemUser::getUsername,loginVo.getUsername());
-        SystemUser systemUser = systemUserMapper.selectOne(systemUserLambdaQueryWrapper);
+        SystemUser systemUser = systemUserMapper.selectOneByUsername(loginVo.getUsername());
 
         if (systemUser == null) {
             throw new LeaseException(ResultCodeEnum.ADMIN_ACCOUNT_NOT_EXIST_ERROR);
@@ -80,4 +80,12 @@ public class LoginServiceImpl implements LoginService {
         return JwtUtil.createToken(systemUser.getId(), systemUser.getUsername());
     }
 
+    @Override
+    public SystemUserInfoVo getLoginUserInfo(Long userId) {
+        SystemUser systemUser = systemUserMapper.selectById(userId);
+        SystemUserInfoVo systemUserInfoVo = new SystemUserInfoVo();
+        systemUserInfoVo.setName(systemUser.getName());
+        systemUserInfoVo.setAvatarUrl(systemUser.getAvatarUrl());
+        return systemUserInfoVo;
+    }
 }
